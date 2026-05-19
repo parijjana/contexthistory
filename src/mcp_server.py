@@ -175,7 +175,7 @@ def onboard_project() -> Dict[str, Any]:
         return {
             "status": "SUCCESS",
             "project_map": project_map,
-            "instruction": "I have mapped the project structure. Please inform the user that evolutionary history begins from today. Present the high-level directories and ask the user to provide initial context/intent for each major module to seed the memory."
+            "instruction": "I have mapped the project structure. Inform the user that evolutionary history begins from today. For each major module, ASK the user if they want you to (A) Analyze the files and propose the intent/context, or (B) If they want to provide the context manually. You must get human confirmation before performing any deep file analysis for seeding."
         }
     except Exception as e:
         return {"status": "ERROR", "message": str(e)}

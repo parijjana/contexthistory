@@ -34,10 +34,11 @@ This skill enables an agent to manage large-scale projects without context bloat
 When starting with an existing ("in-flight") project, you must establish a "Day Zero" memory baseline to ground your future work.
 
 1.  **Initiate Onboarding:** Call `onboard_project()`. This will generate a comprehensive map of the current source files and tests.
-2.  **Interactive Seeding:** Inform the user that evolutionary history begins from this point. Then, conduct a guided "Interview" with the user:
-    - Present a high-level module or directory from the project map.
-    - Ask the user: *"What is the core intent and purpose of the logic in `[directory]`?"*
-    - Use `seed_initial_context(module_path, context)` to record their answer.
+2.  **Interactive Seeding (Human-Gated):** Inform the user that evolutionary history begins from this point. Then, conduct a guided "Interview" for each major module in the map:
+    - Ask the user: *"For the module `[directory]`, should I analyze the files to propose a context, or would you like to provide it manually?"*
+    - **If Agent Analysis is chosen:** Read the files in that directory, summarize their core intent and architectural role, and present this to the user for confirmation.
+    - **If Manual Seeding is chosen:** Ask the user to describe the module's purpose.
+    - Call `seed_initial_context(module_path, context)` once the context is finalized.
     - *Repeat* this for all major modules until the user is satisfied.
 3.  **Genesis Marking:** This process marks the transition from "untracked legacy" to "evolutionary tracked" code.
 
