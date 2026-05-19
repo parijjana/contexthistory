@@ -1,13 +1,12 @@
 # Sandbox
 evolutionary-test-sandbox/
 
-# Documentation (Excluded per user request)
-GEMINI.md
-PROGRESS_LOG.md
-ARCHITECTURE.md
-blueprint.md
-VIBE_CHECK.md
-VALIDATION_SUMMARY_*.md
+# Documentation (General exclusions, but allowing specific public docs)
+*.md
+!README.md
+!SKILL.md
+!evolutionary-memory/README.md
+!evolutionary-memory/SKILL.md
 
 # Python
 __pycache__/
