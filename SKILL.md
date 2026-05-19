@@ -43,7 +43,8 @@ When starting with an existing ("in-flight") project, you must establish a "Day 
     - Propose the context to the user and call `seed_initial_context(module_path, context)`.
     - Provide a **Running Summary** after each module or batch: *"Successfully saved starting context for X/Y modules."*
 4.  **Deferred Seeding:** If the user declines global seeding, note that they (or you) can seed specific modules at any time using the `seed_initial_context` tool.
-5.  **Genesis Marking:** This process marks the transition from "untracked legacy" to "evolutionary tracked" code.
+5.  **Amnesia Rule:** Legacy files (unchanged since onboarding) will not trigger amnesia reports. However, any file modified **after** the onboarding checkpoint **must** include `@trace` tags. Failure to do so will trigger an amnesia report, even if the module was previously seeded.
+6.  **Genesis Marking:** This process marks the transition from "untracked legacy" to "evolutionary tracked" code.
 
 ### 2. Teaching the Librarian (Configuration)
 You can "Teach" the Librarian new language patterns and test runners by updating the project-level config.

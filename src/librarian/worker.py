@@ -146,8 +146,9 @@ def process_file(file_path: Path, last_sync: float, current_sync: float, magnitu
             except Exception: pass
 
             # 3. Decision Logic: 
-            # - Track Amnesia ONLY if modified AFTER onboarding AND no manual seed exists.
-            if mtime > onboarded_at and not has_seed:
+            # - Track Amnesia ONLY if modified AFTER onboarding.
+            # - Seed context is for the initial baseline, but new changes MUST have tags.
+            if mtime > onboarded_at:
                 try:
                     with connect_db(ORCHESTRATION_DB) as o_conn:
                         o_conn.execute(
