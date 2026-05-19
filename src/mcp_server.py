@@ -175,6 +175,15 @@ def onboard_project() -> Dict[str, Any]:
         module_count = len(project_map)
         file_count = sum(len(files) for files in project_map.values())
         
+        # Record Onboarding Checkpoint
+        now = time.time()
+        with db.connect_db(db.ORCHESTRATION_DB) as conn:
+            conn.execute(
+                "INSERT OR REPLACE INTO project_settings (key, value, last_updated) VALUES (?, ?, ?)",
+                ("onboarded_at", str(now), datetime.now())
+            )
+            conn.commit()
+        
         return {
             "status": "SUCCESS",
             "module_count": module_count,
@@ -182,7 +191,7 @@ def onboard_project() -> Dict[str, Any]:
             "project_map": project_map,
             "instruction": (
                 f"I have mapped the project: {module_count} modules and {file_count} files discovered. "
-                "1. Inform the user of these stats and the caveat that evolutionary history starts now. "
+                "1. Inform the user of these stats and the caveat that evolutionary history begins from today. "
                 "2. ASK: 'Would you like me to automatically analyze these modules and seed the initial context now?' "
                 "3. If they say YES: Iteratively analyze each module, propose the context, and call `seed_initial_context`. "
                 "4. Provide a running summary: 'Successfully saved starting context for X/Y modules'. "

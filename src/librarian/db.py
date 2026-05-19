@@ -105,6 +105,12 @@ def init_db():
             """)
             conn.execute("CREATE TABLE IF NOT EXISTS session_state (feat_id TEXT PRIMARY KEY, s_code INTEGER, tasks_json TEXT, last_updated DATETIME)")
             conn.execute("CREATE TABLE IF NOT EXISTS validation_history (session_id TEXT PRIMARY KEY, feat_id TEXT, status TEXT, t_start DATETIME, t_end DATETIME, summary_path TEXT)")
+            # Settings table for onboarding checkpoint
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS project_settings (
+                    key TEXT PRIMARY KEY, value TEXT, last_updated DATETIME
+                )
+            """)
             conn.commit()
     except Exception:
         logger.error(f"Database init failed: {traceback.format_exc()}")

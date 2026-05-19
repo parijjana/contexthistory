@@ -123,6 +123,40 @@ def process_file(file_path: Path, last_sync: float, current_sync: float, magnitu
         tags = parser.parse_tags_multi_line(content)
         updates = 0
         
+        # --- AMNESIA DETECTION (Human-Gated Logic) ---
+        if not tags["traces"]:
+            # 1. Get Onboarding Checkpoint
+            onboarded_at = 0.0
+            try:
+                with connect_db(ORCHESTRATION_DB) as o_conn:
+                    row = o_conn.execute("SELECT value FROM project_settings WHERE key = 'onboarded_at'").fetchone()
+                    if row: onboarded_at = float(row['value'])
+            except Exception: pass
+
+            # 2. Check for Manual Seed Context
+            has_seed = False
+            try:
+                with connect_db(ARCHEOLOGY_DB) as a_conn:
+                    # Check if any parent directory or the file itself has a SEED_CONTEXT
+                    seed_row = a_conn.execute(
+                        "SELECT id FROM memory_archive WHERE type = 'SEED_CONTEXT' AND ? LIKE file_path || '%'",
+                        (str(file_path),)
+                    ).fetchone()
+                    if seed_row: has_seed = True
+            except Exception: pass
+
+            # 3. Decision Logic: 
+            # - Track Amnesia ONLY if modified AFTER onboarding AND no manual seed exists.
+            if mtime > onboarded_at and not has_seed:
+                try:
+                    with connect_db(ORCHESTRATION_DB) as o_conn:
+                        o_conn.execute(
+                            "INSERT INTO amnesia_log (timestamp, file_path, incident_report, type) VALUES (?, ?, ?, ?)",
+                            (datetime.now(), str(file_path), "Missing @trace in post-onboarding modification", "DEFINITE")
+                        )
+                        o_conn.commit()
+                except Exception: pass
+
         with connect_db(ARCHEOLOGY_DB) as conn:
             # --- SEMANTIC ARCHITECT (The HDC System) ---
             # Instead of raw code snapshots (which Git handles), we store 
