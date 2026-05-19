@@ -1,0 +1,16 @@
+[project]
+name = "evolutionary-memory"
+version = "0.1.0"
+description = "Autonomous Quality & Evolutionary Memory system for Gemini CLI"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[fastmcp]>=0.1.0",
+]
+
+[project.scripts]
+memory-librarian = "evolutionary_memory.src.mcp_server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

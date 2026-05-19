@@ -1,0 +1,22 @@
+# Sandbox
+evolutionary-test-sandbox/
+
+# Documentation (Excluded per user request)
+GEMINI.md
+PROGRESS_LOG.md
+ARCHITECTURE.md
+blueprint.md
+VIBE_CHECK.md
+VALIDATION_SUMMARY_*.md
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Databases
+*.db
+
+# Other
+backups/
+.gemini/
