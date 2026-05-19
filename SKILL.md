@@ -30,13 +30,16 @@ This skill enables an agent to manage large-scale projects without context bloat
 
 ## Agent Workflows
 
-### 1. Phase 0: Knowledge Archaeology (Legacy Onboarding)
-When integrating this system into an in-flight project, perform a "Genesis Mapping" to ground yourself and silence noise.
+### 1. Phase 0: Project Onboarding & Genesis Mapping
+When starting with an existing ("in-flight") project, you must establish a "Day Zero" memory baseline to ground your future work.
 
-1.  **Analyze Structure:** Read `ARCHITECTURE.md` and explore the project root.
-2.  **Seed Memory:** Use `seed_legacy_memory` to programmatically register existing directories as a 'Genesis' Feature.
-    - *Tip:* This silences "Amnesia Alerts" for those files without editing them.
-3.  **Amnesia Suppression:** If the project is large, you can temporarily enable `suppress_amnesia: true` in `.librarian/config.json` while you perform the initial mapping.
+1.  **Initiate Onboarding:** Call `onboard_project()`. This will generate a comprehensive map of the current source files and tests.
+2.  **Interactive Seeding:** Inform the user that evolutionary history begins from this point. Then, conduct a guided "Interview" with the user:
+    - Present a high-level module or directory from the project map.
+    - Ask the user: *"What is the core intent and purpose of the logic in `[directory]`?"*
+    - Use `seed_initial_context(module_path, context)` to record their answer.
+    - *Repeat* this for all major modules until the user is satisfied.
+3.  **Genesis Marking:** This process marks the transition from "untracked legacy" to "evolutionary tracked" code.
 
 ### 2. Teaching the Librarian (Configuration)
 You can "Teach" the Librarian new language patterns and test runners by updating the project-level config.

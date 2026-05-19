@@ -113,3 +113,37 @@ def get_delta_files(workspace_root: str, ignore_spec) -> Set[Path]:
             file_path = Path(root) / file
             if file_path.suffix in SUPPORTED_EXTENSIONS and not ignore_spec.match_file(os.path.relpath(file_path, workspace_root)): delta_files.add(file_path)
     return delta_files
+
+def generate_project_map(workspace_root: str) -> Dict[str, Any]:
+    """Generates a comprehensive map of the project files grouped by directory."""
+    ignore_spec = get_ignore_spec(workspace_root)
+    project_map = {}
+    
+    for root, dirs, files in os.walk(workspace_root):
+        rel_root = os.path.relpath(root, workspace_root)
+        
+        # Pruning
+        if rel_root != "." and (any(p in Path(rel_root).parts for p in PRUNE_DIRS) or ignore_spec.match_file(rel_root + "/")):
+            dirs[:] = []
+            continue
+        dirs[:] = [d for d in dirs if d not in PRUNE_DIRS and not ignore_spec.match_file(os.path.join(rel_root, d) + "/")]
+        
+        dir_files = []
+        for file in files:
+            file_path = Path(root) / file
+            rel_file = os.path.relpath(file_path, workspace_root)
+            
+            if ignore_spec.match_file(rel_file):
+                continue
+            
+            file_info = {
+                "name": file,
+                "path": rel_file,
+                "type": "test" if "test" in file.lower() or "spec" in file.lower() else "source"
+            }
+            dir_files.append(file_info)
+            
+        if dir_files:
+            project_map[rel_root] = dir_files
+            
+    return project_map

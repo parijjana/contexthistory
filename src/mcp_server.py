@@ -166,6 +166,36 @@ def get_memory_archive(file_path: Optional[str] = None, limit: int = 10, offset:
             return {"status": "SUCCESS", "data": [dict(row) for row in conn.execute(q, params).fetchall()]}
     except Exception as e: return {"status": "ERROR", "message": str(e)}
 
+@mcp.tool()
+def onboard_project() -> Dict[str, Any]:
+    """Generates a comprehensive map of the project to begin the seeding process."""
+    log_tool_usage("onboard_project")
+    try:
+        project_map = discovery.generate_project_map(WORKSPACE_ROOT)
+        return {
+            "status": "SUCCESS",
+            "project_map": project_map,
+            "instruction": "I have mapped the project structure. Please inform the user that evolutionary history begins from today. Present the high-level directories and ask the user to provide initial context/intent for each major module to seed the memory."
+        }
+    except Exception as e:
+        return {"status": "ERROR", "message": str(e)}
+
+@mcp.tool()
+def seed_initial_context(module_path: str, context: str) -> Dict[str, str]:
+    """Manually seeds foundational context for a specific module or directory."""
+    log_tool_usage("seed_initial_context")
+    try:
+        current_sha = discovery.get_current_sha(WORKSPACE_ROOT)
+        with db.connect_db(db.ARCHEOLOGY_DB) as conn:
+            conn.execute("""
+                INSERT INTO memory_archive (archived_at, type, feat_id, file_path, content_json, reason, magnitude, git_sha)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (time.time(), "SEED_CONTEXT", "ONBOARDING", module_path, json.dumps({"seed_context": context}), f"Initial seed context for module: {module_path}", 1.0, current_sha))
+            conn.commit()
+        return {"status": "SUCCESS", "message": f"Seeded context for {module_path}"}
+    except Exception as e:
+        return {"status": "ERROR", "message": str(e)}
+
 def main():
     db.init_db()
     threading.Thread(target=run_background_crawler, daemon=True).start()

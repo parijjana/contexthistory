@@ -51,6 +51,15 @@ Once installed, your agent will automatically identify when to use the Evolution
 
 Since the core of this project is a standard **Model Context Protocol (MCP)** server, you can use these tools with other compatible agents like Claude Desktop or Cursor.
 
+### Automated Setup (Claude Desktop)
+
+We provide a script to automatically configure Claude Desktop for you:
+
+```bash
+python setup_agents.py
+```
+*This script will install dependencies and inject the MCP server configuration into your Claude settings.*
+
 ### Manual Setup for Claude Desktop
 
 1. Open your Claude Desktop configuration file:
