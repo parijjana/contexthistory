@@ -168,14 +168,26 @@ def get_memory_archive(file_path: Optional[str] = None, limit: int = 10, offset:
 
 @mcp.tool()
 def onboard_project() -> Dict[str, Any]:
-    """Generates a comprehensive map of the project to begin the seeding process."""
+    """Generates a comprehensive map of the project and summary stats for onboarding."""
     log_tool_usage("onboard_project")
     try:
         project_map = discovery.generate_project_map(WORKSPACE_ROOT)
+        module_count = len(project_map)
+        file_count = sum(len(files) for files in project_map.values())
+        
         return {
             "status": "SUCCESS",
+            "module_count": module_count,
+            "file_count": file_count,
             "project_map": project_map,
-            "instruction": "I have mapped the project structure. Inform the user that evolutionary history begins from today. For each major module, ASK the user if they want you to (A) Analyze the files and propose the intent/context, or (B) If they want to provide the context manually. You must get human confirmation before performing any deep file analysis for seeding."
+            "instruction": (
+                f"I have mapped the project: {module_count} modules and {file_count} files discovered. "
+                "1. Inform the user of these stats and the caveat that evolutionary history starts now. "
+                "2. ASK: 'Would you like me to automatically analyze these modules and seed the initial context now?' "
+                "3. If they say YES: Iteratively analyze each module, propose the context, and call `seed_initial_context`. "
+                "4. Provide a running summary: 'Successfully saved starting context for X/Y modules'. "
+                "5. Note: You or the human can also run this seeding process for specific modules later using `seed_initial_context`."
+            )
         }
     except Exception as e:
         return {"status": "ERROR", "message": str(e)}

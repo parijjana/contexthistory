@@ -31,16 +31,19 @@ This skill enables an agent to manage large-scale projects without context bloat
 ## Agent Workflows
 
 ### 1. Phase 0: Project Onboarding & Genesis Mapping
-When starting with an existing ("in-flight") project, you must establish a "Day Zero" memory baseline to ground your future work.
+When starting with an existing ("in-flight") project, you must establish a "Day Zero" memory baseline.
 
-1.  **Initiate Onboarding:** Call `onboard_project()`. This will generate a comprehensive map of the current source files and tests.
-2.  **Interactive Seeding (Human-Gated):** Inform the user that evolutionary history begins from this point. Then, conduct a guided "Interview" for each major module in the map:
-    - Ask the user: *"For the module `[directory]`, should I analyze the files to propose a context, or would you like to provide it manually?"*
-    - **If Agent Analysis is chosen:** Read the files in that directory, summarize their core intent and architectural role, and present this to the user for confirmation.
-    - **If Manual Seeding is chosen:** Ask the user to describe the module's purpose.
-    - Call `seed_initial_context(module_path, context)` once the context is finalized.
-    - *Repeat* this for all major modules until the user is satisfied.
-3.  **Genesis Marking:** This process marks the transition from "untracked legacy" to "evolutionary tracked" code.
+1.  **Initiate Onboarding:** Call `onboard_project()`.
+2.  **Global Approval:**
+    - Report the number of modules and files discovered (e.g., "Mapped 15 modules and 120 files").
+    - Provide the caveat: *"Evolutionary history begins from this point. Previous context is missing."*
+    - **ASK:** *"Would you like me to automatically analyze these modules and seed the initial context now?"*
+3.  **Iterative Seeding (Agent-led):**
+    - If approved, analyze each directory to infer its purpose and architectural role.
+    - Propose the context to the user and call `seed_initial_context(module_path, context)`.
+    - Provide a **Running Summary** after each module or batch: *"Successfully saved starting context for X/Y modules."*
+4.  **Deferred Seeding:** If the user declines global seeding, note that they (or you) can seed specific modules at any time using the `seed_initial_context` tool.
+5.  **Genesis Marking:** This process marks the transition from "untracked legacy" to "evolutionary tracked" code.
 
 ### 2. Teaching the Librarian (Configuration)
 You can "Teach" the Librarian new language patterns and test runners by updating the project-level config.
